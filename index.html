@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PostHog Engineering Impact Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'Inter', system-ui, sans-serif; }
+  .card-selected { ring: 2px; box-shadow: 0 0 0 2px var(--sel-color, #2563eb); }
+  .score-bar { transition: width 0.6s ease-out; }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .metric-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 500; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<script>
+const DATA = {"summary": {"total_prs": 5221, "total_reviews": 8137, "active_engineers": 171, "date_range": "Dec 05, 2025 - Mar 05, 2026", "days": 90}, "weights": {"shipping": 35, "reviewing": 30, "consistency": 20, "reach": 15}, "engineers": [{"rank": 1, "login": "rafaeelaudibert", "color": "#2563eb", "avatar": "https://github.com/rafaeelaudibert.png?size=80", "overall_score": 100.0, "shipping_score": 100.0, "reviewing_score": 100.0, "consistency_score": 100.0, "reach_score": 100.0, "prs_count": 146, "reviews_count": 451, "weeks_active": 14, "total_additions": 75851, "total_deletions": 51173, "unique_authors_reviewed": 61, "unique_reviewers": 47, "highlights": ["Top Shipper", "Deep Reviewer", "Always On", "Wide Reach"], "top_prs": [{"number": 48362, "title": "chore: migrate formatting from prettier to oxfmt", "url": "https://github.com/PostHog/posthog/pull/48362", "additions": 3759, "deletions": 3240, "changedFiles": 881, "mergedAt": "2026-02-24T01:55:12Z", "labels": []}, {"number": 45646, "title": "feat: Add new \"Quick start\" section", "url": "https://github.com/PostHog/posthog/pull/45646", "additions": 3996, "deletions": 2054, "changedFiles": 510, "mergedAt": "2026-01-26T23:12:11Z", "labels": []}, {"number": 46583, "title": "refactor: Simplify MCP folder structure and remove publish steps", "url": "https://github.com/PostHog/posthog/pull/46583", "additions": 289, "deletions": 11174, "changedFiles": 227, "mergedAt": "2026-02-04T02:42:24Z", "labels": []}, {"number": 48090, "title": "feat: Rework settings by creating custom components + structure", "url": "https://github.com/PostHog/posthog/pull/48090", "additions": 1752, "deletions": 1923, "changedFiles": 156, "mergedAt": "2026-02-17T03:10:28Z", "labels": []}, {"number": 46063, "title": "feat: Create MCP apps", "url": "https://github.com/PostHog/posthog/pull/46063", "additions": 4963, "deletions": 1555, "changedFiles": 73, "mergedAt": "2026-01-31T02:34:21Z", "labels": []}], "top_reviews": [{"pr_number": 45468, "pr_title": "feat(onboarding): AI-powered conversational onboarding with product discovery", "pr_url": "https://github.com/PostHog/posthog/pull/45468", "pr_author": "MattBro", "state": "CHANGES_REQUESTED", "comments_count": 6, "body_length": 137}, {"pr_number": 44277, "pr_title": "feat(customers): Configure customer profile content", "pr_url": "https://github.com/PostHog/posthog/pull/44277", "pr_author": "arthurdedeus", "state": "APPROVED", "comments_count": 7, "body_length": 253}, {"pr_number": 43962, "pr_title": "feat: add organization integrations settings page", "pr_url": "https://github.com/PostHog/posthog/pull/43962", "pr_author": "MattBro", "state": "CHANGES_REQUESTED", "comments_count": 10, "body_length": 0}, {"pr_number": 48120, "pr_title": "feat(toolbar): switch toolbar from temporary tokens to OAuth", "pr_url": "https://github.com/PostHog/posthog/pull/48120", "pr_author": "fercgomes", "state": "CHANGES_REQUESTED", "comments_count": 5, "body_length": 120}, {"pr_number": 42229, "pr_title": "feat(types): generate TypeScript types from Django serializers", "pr_url": "https://github.com/PostHog/posthog/pull/42229", "pr_author": "webjunkie", "state": "COMMENTED", "comments_count": 6, "body_length": 310}]}, {"rank": 2, "login": "pauldambra", "color": "#7c3aed", "avatar": "https://github.com/pauldambra.png?size=80", "overall_score": 82.0, "shipping_score": 81.5, "reviewing_score": 62.8, "consistency_score": 100.0, "reach_score": 97.2, "prs_count": 214, "reviews_count": 332, "weeks_active": 14, "total_additions": 32747, "total_deletions": 23462, "unique_authors_reviewed": 51, "unique_reviewers": 54, "highlights": ["Top Shipper", "Always On", "Wide Reach"], "top_prs": [{"number": 43017, "title": "revert: \"fix(devex): remove important: true in tailwind\"", "url": "https://github.com/PostHog/posthog/pull/43017", "additions": 9490, "deletions": 10001, "changedFiles": 224, "mergedAt": "2025-12-09T12:05:02Z", "labels": []}, {"number": 43028, "title": "feat: export replay data for local testing", "url": "https://github.com/PostHog/posthog/pull/43028", "additions": 2220, "deletions": 56, "changedFiles": 33, "mergedAt": "2025-12-15T13:12:06Z", "labels": []}, {"number": 42897, "title": "chore: add storybook scenes for many player layouts", "url": "https://github.com/PostHog/posthog/pull/42897", "additions": 1231, "deletions": 83, "changedFiles": 43, "mergedAt": "2025-12-11T16:38:46Z", "labels": []}, {"number": 46159, "title": "feat: deprecate sampling for insights", "url": "https://github.com/PostHog/posthog/pull/46159", "additions": 143, "deletions": 195, "changedFiles": 50, "mergedAt": "2026-01-29T11:45:54Z", "labels": []}, {"number": 47211, "title": "feat: add quick filter support for Pageview URLs and Screens", "url": "https://github.com/PostHog/posthog/pull/47211", "additions": 1019, "deletions": 96, "changedFiles": 25, "mergedAt": "2026-02-13T09:58:50Z", "labels": []}], "top_reviews": [{"pr_number": 42886, "pr_title": "replay: optimize bulk_delete fix, account for direct links", "pr_url": "https://github.com/PostHog/posthog/pull/42886", "pr_author": "ksvat", "state": "APPROVED", "comments_count": 0, "body_length": 133}, {"pr_number": 42794, "pr_title": "chore(deps): upgrade pytest and plugins to latest versions", "pr_url": "https://github.com/PostHog/posthog/pull/42794", "pr_author": "webjunkie", "state": "APPROVED", "comments_count": 0, "body_length": 142}, {"pr_number": 43492, "pr_title": "chore: abstract ingestion control triggers", "pr_url": "https://github.com/PostHog/posthog/pull/43492", "pr_author": "daibhin", "state": "APPROVED", "comments_count": 0, "body_length": 114}, {"pr_number": 43383, "pr_title": "chore(replay): Disable full video export limit for staff", "pr_url": "https://github.com/PostHog/posthog/pull/43383", "pr_author": "Twixes", "state": "APPROVED", "comments_count": 0, "body_length": 159}, {"pr_number": 44102, "pr_title": "feat: adding new options to \"share to linear\" issues", "pr_url": "https://github.com/PostHog/posthog/pull/44102", "pr_author": "fasyy612", "state": "APPROVED", "comments_count": 0, "body_length": 231}]}, {"rank": 3, "login": "adboio", "color": "#059669", "avatar": "https://github.com/adboio.png?size=80", "overall_score": 64.1, "shipping_score": 74.7, "reviewing_score": 31.4, "consistency_score": 100.0, "reach_score": 56.5, "prs_count": 163, "reviews_count": 139, "weeks_active": 14, "total_additions": 31804, "total_deletions": 12771, "unique_authors_reviewed": 28, "unique_reviewers": 33, "highlights": ["Always On"], "top_prs": [{"number": 46347, "title": "feat(product tours): rework the edit page", "url": "https://github.com/PostHog/posthog/pull/46347", "additions": 1630, "deletions": 1410, "changedFiles": 35, "mergedAt": "2026-02-05T22:53:46Z", "labels": []}, {"number": 43141, "title": "fix(product tours): add PT to remote config", "url": "https://github.com/PostHog/posthog/pull/43141", "additions": 2013, "deletions": 1061, "changedFiles": 21, "mergedAt": "2025-12-11T20:08:37Z", "labels": []}, {"number": 45644, "title": "feat(product tours): revamp toolbar to skeleton-only", "url": "https://github.com/PostHog/posthog/pull/45644", "additions": 903, "deletions": 1401, "changedFiles": 20, "mergedAt": "2026-01-27T18:05:44Z", "labels": []}, {"number": 42984, "title": "feat: product tours", "url": "https://github.com/PostHog/posthog/pull/42984", "additions": 1194, "deletions": 13, "changedFiles": 22, "mergedAt": "2025-12-09T21:38:04Z", "labels": []}, {"number": 46769, "title": "feat(surveys): integrate with LLMA", "url": "https://github.com/PostHog/posthog/pull/46769", "additions": 1314, "deletions": 4, "changedFiles": 19, "mergedAt": "2026-02-06T22:31:28Z", "labels": []}], "top_reviews": [{"pr_number": 47036, "pr_title": "feat(surveys): add redesigned survey view with collapsible sidebar", "pr_url": "https://github.com/PostHog/posthog/pull/47036", "pr_author": "lucasheriques", "state": "APPROVED", "comments_count": 15, "body_length": 157}, {"pr_number": 44978, "pr_title": "feat(surveys): minimal survey wizard with template selection and appearance customization", "pr_url": "https://github.com/PostHog/posthog/pull/44978", "pr_author": "lucasheriques", "state": "APPROVED", "comments_count": 9, "body_length": 278}, {"pr_number": 47037, "pr_title": "feat(surveys): polish redesigned view with filters, compact stats, and details", "pr_url": "https://github.com/PostHog/posthog/pull/47037", "pr_author": "lucasheriques", "state": "APPROVED", "comments_count": 11, "body_length": 38}, {"pr_number": 44258, "pr_title": "feat(surveys): add AI summarization for open-ended responses", "pr_url": "https://github.com/PostHog/posthog/pull/44258", "pr_author": "lucasheriques", "state": "COMMENTED", "comments_count": 5, "body_length": 188}, {"pr_number": 41754, "pr_title": "feat: custom events image preview", "pr_url": "https://github.com/PostHog/posthog/pull/41754", "pr_author": "a-lider", "state": "APPROVED", "comments_count": 5, "body_length": 226}]}, {"rank": 4, "login": "andrewm4894", "color": "#d97706", "avatar": "https://github.com/andrewm4894.png?size=80", "overall_score": 60.1, "shipping_score": 73.2, "reviewing_score": 20.4, "consistency_score": 100.0, "reach_score": 55.6, "prs_count": 203, "reviews_count": 124, "weeks_active": 13, "total_additions": 40348, "total_deletions": 8169, "unique_authors_reviewed": 30, "unique_reviewers": 30, "highlights": ["Always On"], "top_prs": [{"number": 43489, "title": "feat(llma): (4/4) Add Clusters tab UI with scatter plot visualization", "url": "https://github.com/PostHog/posthog/pull/43489", "additions": 3909, "deletions": 7, "changedFiles": 34, "mergedAt": "2026-01-12T13:13:50Z", "labels": ["team/llm-analytics"]}, {"number": 48278, "title": "feat(llma): (3/3) add sentiment UI to traces table and trace detail view", "url": "https://github.com/PostHog/posthog/pull/48278", "additions": 1412, "deletions": 23, "changedFiles": 42, "mergedAt": "2026-02-23T23:11:45Z", "labels": ["team/llm-analytics"]}, {"number": 43488, "title": "feat(llma): (3/4) Add HDBSCAN clustering workflow with LangGraph labeling agent", "url": "https://github.com/PostHog/posthog/pull/43488", "additions": 3747, "deletions": 474, "changedFiles": 25, "mergedAt": "2026-01-09T10:32:02Z", "labels": ["team/llm-analytics"]}, {"number": 49587, "title": "feat(llma): add Hog code-based evaluation type", "url": "https://github.com/PostHog/posthog/pull/49587", "additions": 1970, "deletions": 144, "changedFiles": 33, "mergedAt": "2026-03-03T16:30:22Z", "labels": ["team/llm-analytics"]}, {"number": 44266, "title": "feat(llma): add error normalization at ingestion time", "url": "https://github.com/PostHog/posthog/pull/44266", "additions": 810, "deletions": 612, "changedFiles": 32, "mergedAt": "2026-01-07T17:19:46Z", "labels": ["team/llm-analytics"]}], "top_reviews": [{"pr_number": 48646, "pr_title": "feat(sig): add llm evals as a signal source", "pr_url": "https://github.com/PostHog/posthog/pull/48646", "pr_author": "oliverb123", "state": "APPROVED", "comments_count": 5, "body_length": 1982}, {"pr_number": 46555, "pr_title": "feat(llma): reset eval keys on delete", "pr_url": "https://github.com/PostHog/posthog/pull/46555", "pr_author": "carlos-marchal-ph", "state": "APPROVED", "comments_count": 2, "body_length": 137}, {"pr_number": 48345, "pr_title": "feat(llma): add prompt usage tab and resolve endpoint", "pr_url": "https://github.com/PostHog/posthog/pull/48345", "pr_author": "Radu-Raicea", "state": "APPROVED", "comments_count": 1, "body_length": 113}, {"pr_number": 48236, "pr_title": "feat(llma): track single trace load age and query timing", "pr_url": "https://github.com/PostHog/posthog/pull/48236", "pr_author": "Radu-Raicea", "state": "APPROVED", "comments_count": 1, "body_length": 228}, {"pr_number": 46328, "pr_title": "feat(llma): add related traces to prompt management", "pr_url": "https://github.com/PostHog/posthog/pull/46328", "pr_author": "Radu-Raicea", "state": "APPROVED", "comments_count": 0, "body_length": 433}]}, {"rank": 5, "login": "webjunkie", "color": "#dc2626", "avatar": "https://github.com/webjunkie.png?size=80", "overall_score": 58.5, "shipping_score": 58.3, "reviewing_score": 23.2, "consistency_score": 100.0, "reach_score": 74.1, "prs_count": 129, "reviews_count": 119, "weeks_active": 12, "total_additions": 119574, "total_deletions": 61638, "unique_authors_reviewed": 43, "unique_reviewers": 37, "highlights": ["Always On"], "top_prs": [{"number": 42229, "title": "feat(types): generate TypeScript types from Django serializers", "url": "https://github.com/PostHog/posthog/pull/42229", "additions": 40362, "deletions": 78, "changedFiles": 103, "mergedAt": "2026-01-07T15:28:00Z", "labels": []}, {"number": 45889, "title": "chore(deps): upgrade orval to 8.0.3", "url": "https://github.com/PostHog/posthog/pull/45889", "additions": 16354, "deletions": 16692, "changedFiles": 76, "mergedAt": "2026-01-28T08:16:59Z", "labels": []}, {"number": 45896, "title": "feat(openapi): generate code for all product endpoints", "url": "https://github.com/PostHog/posthog/pull/45896", "additions": 12838, "deletions": 13774, "changedFiles": 57, "mergedAt": "2026-01-27T13:15:07Z", "labels": []}, {"number": 44784, "title": "chore(deps): upgrade ruff to 0.14.11", "url": "https://github.com/PostHog/posthog/pull/44784", "additions": 1264, "deletions": 1273, "changedFiles": 189, "mergedAt": "2026-01-13T08:16:14Z", "labels": []}, {"number": 48284, "title": "chore: use PascalCase for generated Orval enum keys", "url": "https://github.com/PostHog/posthog/pull/48284", "additions": 2531, "deletions": 2530, "changedFiles": 70, "mergedAt": "2026-02-19T03:26:15Z", "labels": []}], "top_reviews": [{"pr_number": 45817, "pr_title": "refactor(devex): use mprocs for e2e test runner", "pr_url": "https://github.com/PostHog/posthog/pull/45817", "pr_author": "ReeceJones", "state": "COMMENTED", "comments_count": 1, "body_length": 768}, {"pr_number": 45853, "pr_title": "chore(surveys): autogenerate sdk parity docs", "pr_url": "https://github.com/PostHog/posthog/pull/45853", "pr_author": "adboio", "state": "COMMENTED", "comments_count": 1, "body_length": 412}, {"pr_number": 41495, "pr_title": "chore: Naive pass at feature flag api docs", "pr_url": "https://github.com/PostHog/posthog/pull/41495", "pr_author": "gewenyu99", "state": "COMMENTED", "comments_count": 0, "body_length": 1706}, {"pr_number": 44855, "pr_title": "chore(celery): Add `PushGatewayTask` base class for automatic metrics", "pr_url": "https://github.com/PostHog/posthog/pull/44855", "pr_author": "haacked", "state": "COMMENTED", "comments_count": 0, "body_length": 295}, {"pr_number": 44450, "pr_title": "chore: upgrade `cryptography` to 46.0.3", "pr_url": "https://github.com/PostHog/posthog/pull/44450", "pr_author": "ReeceJones", "state": "APPROVED", "comments_count": 0, "body_length": 112}]}]};
+</script>
+
+<!-- Header -->
+<header class="bg-white border-b border-slate-200 px-6 py-3">
+  <div class="max-w-[1400px] mx-auto flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-bold text-slate-900">PostHog Engineering Impact</h1>
+      <p class="text-sm text-slate-500" id="dateRange"></p>
+    </div>
+    <div class="flex gap-6 text-center">
+      <div>
+        <div class="text-2xl font-bold text-slate-900" id="statPRs"></div>
+        <div class="text-xs text-slate-500 uppercase tracking-wide">PRs Merged</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-slate-900" id="statReviews"></div>
+        <div class="text-xs text-slate-500 uppercase tracking-wide">Reviews</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-slate-900" id="statEngineers"></div>
+        <div class="text-xs text-slate-500 uppercase tracking-wide">Engineers</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="max-w-[1400px] mx-auto px-6 py-4">
+  <!-- Top section: ranking + radar chart -->
+  <div class="grid grid-cols-12 gap-4 mb-4">
+
+    <!-- Left: Ranking cards -->
+    <div class="col-span-5">
+      <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">Top 5 Most Impactful Engineers</h2>
+      <div class="space-y-2" id="rankingCards"></div>
+    </div>
+
+    <!-- Right: Radar chart + Methodology -->
+    <div class="col-span-7 flex flex-col gap-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex-1 flex items-center justify-center">
+        <div style="width: 100%; max-width: 420px; max-height: 300px;">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom section: Detail panel + Methodology -->
+  <div class="grid grid-cols-12 gap-4">
+    <!-- Detail panel -->
+    <div class="col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-4" id="detailPanel">
+      <div class="text-sm text-slate-400 text-center py-8">Click on an engineer to see their contributions</div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+      <h3 class="text-sm font-semibold text-slate-700 mb-3">How Impact is Measured</h3>
+      <div class="space-y-2 text-xs text-slate-600">
+        <div class="flex items-start gap-2">
+          <span class="metric-pill bg-blue-100 text-blue-700 shrink-0">Shipping 35%</span>
+          <span>Volume and complexity of code merged. Each PR is scored as log2(lines changed) x log2(files touched) - rewarding meaningful work without over-weighting bulk refactors.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="metric-pill bg-violet-100 text-violet-700 shrink-0">Reviewing 30%</span>
+          <span>Quality of code reviews. Reviews with substantive comments and change requests score higher than simple approvals.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="metric-pill bg-emerald-100 text-emerald-700 shrink-0">Consistency 20%</span>
+          <span>Weeks active out of the period. Rewards sustained engagement over burst activity.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="metric-pill bg-amber-100 text-amber-700 shrink-0">Reach 15%</span>
+          <span>Breadth of collaboration. Engineers who review many people's code and are reviewed by many score higher.</span>
+        </div>
+        <div class="mt-3 pt-3 border-t border-slate-100 text-slate-500">
+          <p class="mb-1"><strong>Why these metrics?</strong> Lines of code and commit counts don't capture impact. This model rewards engineers who ship meaningful changes, elevate their team through reviews, show up consistently, and work across organizational boundaries.</p>
+          <p>Scores are normalized relative to the top contributor in each dimension, so 100 = the highest in the team.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// === Render summary stats ===
+document.getElementById('dateRange').textContent = DATA.summary.date_range;
+document.getElementById('statPRs').textContent = DATA.summary.total_prs.toLocaleString();
+document.getElementById('statReviews').textContent = DATA.summary.total_reviews.toLocaleString();
+document.getElementById('statEngineers').textContent = DATA.summary.active_engineers;
+
+// === Render ranking cards ===
+let selectedIdx = null;
+const cardsContainer = document.getElementById('rankingCards');
+
+DATA.engineers.forEach((eng, idx) => {
+  const card = document.createElement('div');
+  card.className = 'bg-white rounded-lg shadow-sm border border-slate-200 p-3 cursor-pointer hover:shadow-md transition-all';
+  card.style.borderLeftWidth = '3px';
+  card.style.borderLeftColor = eng.color;
+  card.dataset.idx = idx;
+
+  const badges = eng.highlights.map(h => {
+    const colors = {
+      'Top Shipper': 'bg-blue-50 text-blue-600',
+      'Deep Reviewer': 'bg-violet-50 text-violet-600',
+      'Always On': 'bg-emerald-50 text-emerald-600',
+      'Wide Reach': 'bg-amber-50 text-amber-600',
+    };
+    return `<span class="metric-pill ${colors[h] || 'bg-slate-100 text-slate-600'}">${h}</span>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="flex items-center gap-3">
+      <div class="text-lg font-bold text-slate-300 w-5 text-center">${eng.rank}</div>
+      <img src="${eng.avatar}" alt="${eng.login}" class="w-9 h-9 rounded-full" onerror="this.style.display='none'">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-slate-900 text-sm truncate">${eng.login}</span>
+          <div class="flex gap-1">${badges}</div>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
+          <span>${eng.prs_count} PRs</span>
+          <span>${eng.reviews_count} reviews</span>
+          <span>${eng.weeks_active} weeks active</span>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-lg font-bold" style="color: ${eng.color}">${eng.overall_score}</div>
+        <div class="text-[10px] text-slate-400 uppercase">Score</div>
+      </div>
+    </div>
+    <div class="mt-2 flex gap-0.5 h-1.5 rounded-full overflow-hidden bg-slate-100">
+      <div class="bg-blue-500 score-bar" style="width: ${eng.shipping_score * W_SHIPPING}%" title="Shipping: ${eng.shipping_score}"></div>
+      <div class="bg-violet-500 score-bar" style="width: ${eng.reviewing_score * W_REVIEWING}%" title="Reviewing: ${eng.reviewing_score}"></div>
+      <div class="bg-emerald-500 score-bar" style="width: ${eng.consistency_score * W_CONSISTENCY}%" title="Consistency: ${eng.consistency_score}"></div>
+      <div class="bg-amber-500 score-bar" style="width: ${eng.reach_score * W_REACH}%" title="Reach: ${eng.reach_score}"></div>
+    </div>
+  `;
+
+  card.addEventListener('click', () => selectEngineer(idx));
+  cardsContainer.appendChild(card);
+});
+
+const W_SHIPPING = DATA.weights.shipping / 100;
+const W_REVIEWING = DATA.weights.reviewing / 100;
+const W_CONSISTENCY = DATA.weights.consistency / 100;
+const W_REACH = DATA.weights.reach / 100;
+
+// === Radar Chart ===
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+const radarChart = new Chart(radarCtx, {
+  type: 'radar',
+  data: {
+    labels: ['Shipping', 'Reviewing', 'Consistency', 'Reach'],
+    datasets: DATA.engineers.map((eng, i) => ({
+      label: eng.login,
+      data: [eng.shipping_score, eng.reviewing_score, eng.consistency_score, eng.reach_score],
+      borderColor: eng.color,
+      backgroundColor: eng.color + '18',
+      borderWidth: 2,
+      pointRadius: 3,
+      pointBackgroundColor: eng.color,
+    })),
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        ticks: { stepSize: 25, font: { size: 10 }, backdropColor: 'transparent' },
+        pointLabels: { font: { size: 12, weight: '600' } },
+        grid: { color: '#e2e8f0' },
+        angleLines: { color: '#e2e8f0' },
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { font: { size: 11 }, boxWidth: 12, padding: 12 },
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.raw.toFixed(1)}`
+        }
+      }
+    },
+  }
+});
+
+// === Select engineer and show details ===
+function selectEngineer(idx) {
+  selectedIdx = idx;
+  const eng = DATA.engineers[idx];
+
+  // Update card styling
+  document.querySelectorAll('#rankingCards > div').forEach((card, i) => {
+    if (i === idx) {
+      card.style.boxShadow = `0 0 0 2px ${eng.color}`;
+      card.style.borderLeftColor = eng.color;
+    } else {
+      card.style.boxShadow = '';
+    }
+  });
+
+  // Highlight in radar chart
+  radarChart.data.datasets.forEach((ds, i) => {
+    ds.borderWidth = i === idx ? 3 : 1;
+    ds.backgroundColor = ds.borderColor + (i === idx ? '25' : '08');
+    ds.pointRadius = i === idx ? 5 : 2;
+  });
+  radarChart.update();
+
+  // Build detail panel
+  const panel = document.getElementById('detailPanel');
+  const prRows = eng.top_prs.map(pr => `
+    <tr class="border-b border-slate-50 hover:bg-slate-50">
+      <td class="py-1.5 pr-2">
+        <a href="${pr.url}" target="_blank" class="text-blue-600 hover:underline text-xs font-medium">#${pr.number}</a>
+      </td>
+      <td class="py-1.5 pr-2 text-xs text-slate-700 max-w-[280px] truncate">${escapeHtml(pr.title)}</td>
+      <td class="py-1.5 pr-2 text-xs text-right">
+        <span class="text-emerald-600">+${pr.additions.toLocaleString()}</span>
+        <span class="text-red-500">-${pr.deletions.toLocaleString()}</span>
+      </td>
+      <td class="py-1.5 text-xs text-slate-400">${pr.changedFiles} files</td>
+    </tr>
+  `).join('');
+
+  const reviewRows = eng.top_reviews.map(r => {
+    const stateColors = {
+      'APPROVED': 'bg-emerald-100 text-emerald-700',
+      'CHANGES_REQUESTED': 'bg-amber-100 text-amber-700',
+      'COMMENTED': 'bg-blue-100 text-blue-700',
+    };
+    const stateLabels = {
+      'APPROVED': 'Approved',
+      'CHANGES_REQUESTED': 'Changes',
+      'COMMENTED': 'Comment',
+    };
+    return `
+    <tr class="border-b border-slate-50 hover:bg-slate-50">
+      <td class="py-1.5 pr-2">
+        <a href="${r.pr_url}" target="_blank" class="text-blue-600 hover:underline text-xs font-medium">#${r.pr_number}</a>
+      </td>
+      <td class="py-1.5 pr-2 text-xs text-slate-700 max-w-[200px] truncate">${escapeHtml(r.pr_title)}</td>
+      <td class="py-1.5 pr-2 text-xs text-slate-500">@${r.pr_author}</td>
+      <td class="py-1.5 pr-2">
+        <span class="metric-pill ${stateColors[r.state] || 'bg-slate-100 text-slate-600'}">${stateLabels[r.state] || r.state}</span>
+      </td>
+      <td class="py-1.5 text-xs text-slate-400">${r.comments_count} comments</td>
+    </tr>
+    `;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="fade-in">
+      <div class="flex items-center gap-3 mb-3">
+        <img src="${eng.avatar}" alt="" class="w-8 h-8 rounded-full" onerror="this.style.display='none'">
+        <div>
+          <h3 class="font-semibold text-slate-900">${eng.login}</h3>
+          <div class="flex gap-3 text-xs text-slate-500">
+            <span>+${eng.total_additions.toLocaleString()} / -${eng.total_deletions.toLocaleString()} lines</span>
+            <span>Reviewed ${eng.unique_authors_reviewed} people</span>
+            <span>Reviewed by ${eng.unique_reviewers} people</span>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 gap-3 mb-3">
+        <div class="text-center p-2 rounded-lg bg-blue-50">
+          <div class="text-lg font-bold text-blue-700">${eng.shipping_score}</div>
+          <div class="text-[10px] text-blue-500 font-medium uppercase">Shipping</div>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-violet-50">
+          <div class="text-lg font-bold text-violet-700">${eng.reviewing_score}</div>
+          <div class="text-[10px] text-violet-500 font-medium uppercase">Reviewing</div>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-emerald-50">
+          <div class="text-lg font-bold text-emerald-700">${eng.consistency_score}</div>
+          <div class="text-[10px] text-emerald-500 font-medium uppercase">Consistency</div>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-amber-50">
+          <div class="text-lg font-bold text-amber-700">${eng.reach_score}</div>
+          <div class="text-[10px] text-amber-500 font-medium uppercase">Reach</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <h4 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Top PRs Merged</h4>
+          <table class="w-full">${prRows || '<tr><td class="text-xs text-slate-400 py-2">No PRs</td></tr>'}</table>
+        </div>
+        <div>
+          <h4 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Top Reviews Given</h4>
+          <table class="w-full">${reviewRows || '<tr><td class="text-xs text-slate-400 py-2">No reviews</td></tr>'}</table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Auto-select first engineer
+if (DATA.engineers.length > 0) {
+  selectEngineer(0);
+}
+</script>
+</body>
+</html>
