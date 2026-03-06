@@ -56,7 +56,15 @@ const DATA = {"summary": {"total_prs": 5221, "total_reviews": 8137, "active_engi
 
     <!-- Left: Ranking cards -->
     <div class="col-span-5">
-      <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">Top 5 Most Impactful Engineers</h2>
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wide">Top 5 Most Impactful Engineers</h2>
+        <div class="flex items-center gap-2 text-[10px] text-slate-400">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>Ship</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-violet-500 inline-block"></span>Review</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>Consist</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>Reach</span>
+        </div>
+      </div>
       <div class="space-y-2" id="rankingCards"></div>
     </div>
 
@@ -286,7 +294,7 @@ function selectEngineer(idx) {
       <div class="flex items-center gap-3 mb-3">
         <img src="${eng.avatar}" alt="" class="w-8 h-8 rounded-full" onerror="this.style.display='none'">
         <div>
-          <h3 class="font-semibold text-slate-900">${eng.login}</h3>
+          <h3 class="font-semibold text-slate-900"><a href="https://github.com/${eng.login}" target="_blank" class="hover:text-blue-600">${eng.login}</a></h3>
           <div class="flex gap-3 text-xs text-slate-500">
             <span>+${eng.total_additions.toLocaleString()} / -${eng.total_deletions.toLocaleString()} lines</span>
             <span>Reviewed ${eng.unique_authors_reviewed} people</span>
