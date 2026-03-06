@@ -113,6 +113,12 @@ document.getElementById('statPRs').textContent = DATA.summary.total_prs.toLocale
 document.getElementById('statReviews').textContent = DATA.summary.total_reviews.toLocaleString();
 document.getElementById('statEngineers').textContent = DATA.summary.active_engineers;
 
+// === Constants ===
+const W_SHIPPING = DATA.weights.shipping / 100;
+const W_REVIEWING = DATA.weights.reviewing / 100;
+const W_CONSISTENCY = DATA.weights.consistency / 100;
+const W_REACH = DATA.weights.reach / 100;
+
 // === Render ranking cards ===
 let selectedIdx = null;
 const cardsContainer = document.getElementById('rankingCards');
@@ -154,22 +160,17 @@ DATA.engineers.forEach((eng, idx) => {
         <div class="text-[10px] text-slate-400 uppercase">Score</div>
       </div>
     </div>
-    <div class="mt-2 flex gap-0.5 h-1.5 rounded-full overflow-hidden bg-slate-100">
-      <div class="bg-blue-500 score-bar" style="width: ${eng.shipping_score * W_SHIPPING}%" title="Shipping: ${eng.shipping_score}"></div>
-      <div class="bg-violet-500 score-bar" style="width: ${eng.reviewing_score * W_REVIEWING}%" title="Reviewing: ${eng.reviewing_score}"></div>
-      <div class="bg-emerald-500 score-bar" style="width: ${eng.consistency_score * W_CONSISTENCY}%" title="Consistency: ${eng.consistency_score}"></div>
-      <div class="bg-amber-500 score-bar" style="width: ${eng.reach_score * W_REACH}%" title="Reach: ${eng.reach_score}"></div>
+    <div class="mt-2 flex gap-0.5 h-1.5 rounded-full overflow-hidden bg-slate-100" title="Score breakdown: Shipping ${eng.shipping_score} | Reviewing ${eng.reviewing_score} | Consistency ${eng.consistency_score} | Reach ${eng.reach_score}">
+      <div class="bg-blue-500 score-bar" style="width: ${(eng.shipping_score * W_SHIPPING).toFixed(1)}%"></div>
+      <div class="bg-violet-500 score-bar" style="width: ${(eng.reviewing_score * W_REVIEWING).toFixed(1)}%"></div>
+      <div class="bg-emerald-500 score-bar" style="width: ${(eng.consistency_score * W_CONSISTENCY).toFixed(1)}%"></div>
+      <div class="bg-amber-500 score-bar" style="width: ${(eng.reach_score * W_REACH).toFixed(1)}%"></div>
     </div>
   `;
 
   card.addEventListener('click', () => selectEngineer(idx));
   cardsContainer.appendChild(card);
 });
-
-const W_SHIPPING = DATA.weights.shipping / 100;
-const W_REVIEWING = DATA.weights.reviewing / 100;
-const W_CONSISTENCY = DATA.weights.consistency / 100;
-const W_REACH = DATA.weights.reach / 100;
 
 // === Radar Chart ===
 const radarCtx = document.getElementById('radarChart').getContext('2d');
